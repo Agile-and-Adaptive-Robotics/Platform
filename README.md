@@ -13,3 +13,5 @@ Original Designer:
 2nd Designer:
 
 3rd Designer: Jake Chung
+
+Link to the DC motor: https://www.robotmarketplace.com/products/0-e30-150.html
