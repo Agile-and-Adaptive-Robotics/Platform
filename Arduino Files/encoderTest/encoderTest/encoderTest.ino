@@ -15,7 +15,7 @@
    pinMode (outputA,INPUT);
    pinMode (outputB,INPUT);
    
-   Serial.begin (9600);
+   Serial.begin (112500);
    // Reads the initial state of the outputA
    aLastState = digitalRead(outputA);   
  } 
