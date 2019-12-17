@@ -6,33 +6,50 @@ Dec-15-2019
 
 /*----------------------- Included Libraries  --------------------------------*/
 #include <SPI.h>          //For communicating with DAC
+#include <Encoder.h>	 
 
 //Dac Library information at http://arduino.alhin.de/index.php?n=8
 #include <AH_MCP4921.h>   //For easy DAC functions
 
+//Encoder pins
+#define encA 2
+#define encB 3
+
 /*----------------------- Definitions  --------------------------------*/
 AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino MEGA Pins 51, 52, 53
 
-/*------------------------Encoder setup------------------------------------*/
-int counter = 180;
-int aState;
+//Pot set up
+int InputPin = A1;
 
-//Pot setup
-int InputPin = A0;
+//Encoder set up
+Encoder myEnc(encA, encB);
+
+//Controller set up
+float KP = 1.0;
+float DACoffset = 4096.0/2.0;
 
 void setup() {
-	//Serial.begin(9600);
+	Serial.begin(112500);
 	pinMode(InputPin, INPUT);
-	PinMode(encA, INPUT);
-	PinMode(encB, INPUT);
 }
 
 void loop() {
  	//read the encoder 
-	aState = digitalRead(encA);
-	//If the output of B pin is not the same as pin A, then the encoder rotates the the left
-	if (digitalRead(encB) != aState) {
-		counter = counter + 360/2048;
-	} else {
-		counter = counter - 360/2048;
-	}
+	float pos = myEnc.read();
+	float encAngle = 10.0/226.0*pos;
+	
+	float posValue = analogRead(InputPin);
+	float posAngle = 10.0/256.0*posValue - 20.0;
+	
+	float error = encAngle - posAngle; 
+	float DACerror = error*4096.0/20.0;
+	float DACsignal = KP*DACerror + DACoffset;
+	
+    if(DACsignal > 4095.0){
+      DACsignal = 4095.0;
+    }
+    else if(DACsignal < 0.0){
+      DACsignal = 0.0;
+    }
+    AnalogOutput.setValue((int) DACsignal);
+}
