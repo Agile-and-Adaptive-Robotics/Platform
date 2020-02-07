@@ -122,20 +122,20 @@ void InterruptSetup(){
 }
 
 ISR(TIMER1_COMPA_vect){
-    if(VoltageMode == 0){
-      AnalogOutput.setValue(4096/2);
-    }
-    else if(VoltageMode == 1){
-	  //Read the encoder
+  if(VoltageMode == 0){
+	  AnalogOutput.setValue(4096/2);
+  }
+  else if(VoltageMode == 1){
+		//Read the encoder
 	  float pos = myEnc.read();
 	  float encAngle = 10.0/226.0*pos;
 	  
-    float PosValue = analogRead(InputPin);                            //Reads position value from a manually controller potentiometer
-    float PosAngle = 10.0/256.0*PosValue - 20.0;
+	  float PosValue = analogRead(InputPin);                            //Reads position value from a manually controller potentiometer
+	  float PosAngle = 10.0/256.0*PosValue - 20.0;
     
-    float error = encAngle - PosAngle;                               //Value - setpoint, so that the correct motor polarity is achieved
-    float DACerror = error*4096.0/20.0;
-    float DACsignal = KP*DACerror + DACoffset;              // I think the increased polarity only happens when the arduino is plugged into the computer.
+	  float error = encAngle - PosAngle;                               //Value - setpoint, so that the correct motor polarity is achieved
+	  float DACerror = error*4096.0/20.0;
+	  float DACsignal = KP*DACerror + DACoffset;              // I think the increased polarity only happens when the arduino is plugged into the computer.
     if(DACsignal > 4095.0){
       DACsignal = 4095.0;
     }
