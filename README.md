@@ -6,12 +6,20 @@ This repo is for the Platform project to test the Bipedal robot in the Agile Ada
 
 ## Content
 
-Goals: To create a test platform that can vibrate at pseudorandom pattern to test the Bipedal robot. 
+Goals: To create a balance platform that can vibrate at pseudorandom pattern to test the Bipedal robot. 
+Dr. Hunt wants the platform to be able to generate a motion following the pseudo random ternary sequence to test the bipedal robot. When the robot is tested on this platform, the transfer function of the bipedal robot can be derived. 
 
-Original Designer:
+## Deadline:
+At least the end of Spring Term 2020
 
-2nd Designer:
+## Creators:
+
+Original Designer: Lindsey
+
+2nd Designer: Connor Morrow
 
 3rd Designer: Jake Chung
+
+## Notes:
 
 Link to the DC motor: https://www.robotmarketplace.com/products/0-e30-150.html
