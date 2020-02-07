@@ -5,6 +5,10 @@
  *  This code is used to control the balance platform used for determining balance characteristics of robots.
  *  The code holds its output at a constant 2.5V (the voltage for no motor velocity), until it detects a high signal coming from the H-Bridge.
  *  When the high signal is recieved, the Arduino switches to producing a sine wave output. 
+ *	
+ *	Jake Chung
+ *	12/20/2019
+ *	Update Connor's code to use encoder to measure the angle of the platform.
  */
 /*----------------------- Included Libraries  --------------------------------*/
 #include <SPI.h>          //For communicating with DAC
