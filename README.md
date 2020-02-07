@@ -21,8 +21,8 @@ Original Designer: Lindsey
 3rd Designer: Jake Chung
 
 ## Parts List:
-- LM 7805C: Voltage regulator 
-- LM 348N: Quad op-amp
+- LM 7805C - Voltage regulator 
+- LM 348N - Quad op-amp
 - MCP 4921 - DAC
 - Syren 50 - H-Bridge
 
