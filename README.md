@@ -20,6 +20,12 @@ Original Designer: Lindsey
 
 3rd Designer: Jake Chung
 
+## Parts List:
+- LM 7805C: Voltage regulator 
+- LM 348N: Quad op-amp
+- MCP 4921 - DAC
+- Syren 50 - H-Bridge
+
 ## Notes:
 
 Link to the DC motor: https://www.robotmarketplace.com/products/0-e30-150.html
