@@ -10,5 +10,5 @@ void setup() {
 }
 
 void loop() {
-  analogWrite(pin, 255);
+  analogWrite(pin, 20);
 }
