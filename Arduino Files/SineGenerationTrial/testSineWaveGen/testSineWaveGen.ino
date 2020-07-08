@@ -5,7 +5,7 @@
 #define SAMP_SIZE 100 //define the sample size of the sine value array
 
 //Define the variables
-int Amp = 1; //amplitude of the sine wave
+int Amp = 128; //amplitude of the sine wave
 byte VerShift = 128; //vertical shift of the sine wave
 int pin = 3;
 int Freq = 1; //Frequency of the sine wave (not angular frequency)
