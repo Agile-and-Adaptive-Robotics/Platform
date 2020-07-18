@@ -17,18 +17,18 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 #define encB 20
 
 /*----------------------- Sine Wave Parameters ------------------------*/
-float Period = 2;                    //Best starting at about 0.5 seconds
-float PtPAmplitude = 0.8;  
+float Period = 0.2;                    //Best starting at about 0.5 seconds
+float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
 int counter = 0;
 float DACoffset = 4096.0/2.0;
-float Kp = 0.5;
+float Kp = 1;
 
 //Encoder set up
 Encoder myEnc(encA, encB);
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   InterruptSetup(); 
 }
 
@@ -79,14 +79,15 @@ ISR(TIMER1_COMPA_vect){
   if (counter*InterruptRate >= Period){
     counter = 0;
   }
-
+  
   //set up the negative feedback loop
   float pos = myEnc.read();
   float encAngle = 10.0/226.0*pos; //convert to degrees
-  float encVol = 2.5/10.0*encAngle + 2.5; //convert read angle to voltage
+  float encVol = 2.5/10.0*encAngle; //convert read angle to voltage
 
-  float error = DACOutput - encVol;
-  float DACsignal = Kp*error + DACoffset;
+  float error = -Output + encVol;
+  float DACerror = error*4096.0/5;
+  float DACsignal = Kp*DACerror + DACoffset;
 
   if(DACsignal > 4095.0){
     DACsignal = 4095.0;
@@ -95,5 +96,14 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
+  //Serial.print("Counter: "); 
+  //Serial.print(counter);
+  //Serial.print(" Sine Value: ");
+  //Serial.print(Output);
+  Serial.print(" Enc Val: ");
+  Serial.print(encVol);
+  Serial.print(" DACerror: ");
+  Serial.print(error);
+  Serial.print(" DAC Signal: ");
   Serial.println(DACsignal);
 }
