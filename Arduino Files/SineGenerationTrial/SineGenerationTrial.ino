@@ -1,37 +1,47 @@
 /*This sketch is meant to test generation of a sine wave through the DAC*/
+/*
+ * Jake Chung: Build off of Connor's code to generate a sine wave pattern
+ */
 /*----------------------- Included Libraries  --------------------------------*/
 #include <SPI.h>          //For communicating with DAC
+#include <Encoder.h>      //For encoder 
 
 //Dac Library information at http://arduino.alhin.de/index.php?n=8
-#include <AH_MCP4921.h>   //For easy DAC functions
-
+#include <AH_MCP4921.h>   //For easy DAC functions]
 
 /*----------------------- Definitions  --------------------------------*/
 AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino MEGA Pins 51, 52, 53
 
+//define the encoder pins
+#define encA 19
+#define encB 20
+
 /*----------------------- Sine Wave Parameters ------------------------*/
-float Period = 0.5;                    //Best starting at about 0.5 seconds
-float PtPAmplitude = 4.0;  
+float Period = 2;                    //Best starting at about 0.5 seconds
+float PtPAmplitude = 0.8;  
 float InterruptRate = 0.02;
 int counter = 0;
+float DACoffset = 4096.0/2.0;
+float Kp = 0.5;
+
+//Encoder set up
+Encoder myEnc(encA, encB);
 
 void setup() {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   InterruptSetup(); 
-  
 }
 
 void loop() {
   int t = millis();
   //Serial.println(t);
-  if(t > 10000){
+  //if(t > 10000){
+  if(0){
     TIMSK1 = 0;
     AnalogOutput.setValue(4096/2);
     while(1){
-      
     }
   }
-
 }
 
 void InterruptSetup(){
@@ -69,5 +79,21 @@ ISR(TIMER1_COMPA_vect){
   if (counter*InterruptRate >= Period){
     counter = 0;
   }
-  AnalogOutput.setValue((int) DACOutput);
+
+  //set up the negative feedback loop
+  float pos = myEnc.read();
+  float encAngle = 10.0/226.0*pos; //convert to degrees
+  float encVol = 2.5/10.0*encAngle + 2.5; //convert read angle to voltage
+
+  float error = DACOutput - encVol;
+  float DACsignal = Kp*error + DACoffset;
+
+  if(DACsignal > 4095.0){
+    DACsignal = 4095.0;
+  }
+  else if(DACsignal < 0.0){
+    DACsignal = 0.0;
+  }
+  AnalogOutput.setValue((int) DACsignal);
+  Serial.println(DACsignal);
 }
