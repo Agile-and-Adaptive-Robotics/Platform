@@ -15,15 +15,16 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 //define the encoder pins
 #define encA 19
 #define encB 20
-#define FreqSamplingSize 20
+#define FreqSamplingSize 5
 
 /*----------------------- Sine Wave Parameters ------------------------*/
-float Period = 0.5;                    //Best starting at about 0.5 seconds
+//float Period = 5;
 float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
 int counter = 0;
 float FreqArr[FreqSamplingSize];
 int i = 0; //counter for for loop
+int j = 3; //counter for the Frequency Array to loop through all frequencies
 
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
@@ -33,28 +34,23 @@ float Kp = 1;
 Encoder myEnc(encA, encB);
 
 void setup() {
-  Serial.begin(115200);
-  InterruptSetup(); 
-
+  //Serial.begin(115200);
   //Set up the Frequency Array
-  while(!Serial){
-    ;//wait to open the serial port
-  }
   for (i=0; i < FreqSamplingSize; i++) {
     FreqArr[i] = 0.2 +(2.5-0.2)*i/FreqSamplingSize;
-    Serial.println(FreqArr[i]);
   }
+  InterruptSetup();
+  delay(500); //this delay seems to work
 }
 
 void loop() {
   int t = millis();
-  //Serial.println(t);
-  if(t > 10000){
-  //if(0){ //uncomment this for the interupt to run continuously
+  if(t%10000==0){
+    j++;
+  }
+  if(j > FreqSamplingSize){
     TIMSK1 = 0;
     AnalogOutput.setValue(4096/2);
-    while(1){
-    }
   }
 }
 
@@ -78,6 +74,7 @@ void InterruptSetup(){
 }
 
 ISR(TIMER1_COMPA_vect){
+  float Period = 1/FreqArr[j];
   float Output = PtPAmplitude/2*sin((counter*InterruptRate)*2*PI/Period);
   float DACOutput = Output/5.0*4096.0+4096.0/2.0;
 
@@ -110,10 +107,6 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
-  //Serial.print("Counter: "); 
-  //Serial.print(counter);
-  //Serial.print(" Sine Value: ");
-  //Serial.print(Output);
   //Serial.print(" Enc Vol: ");
   //Serial.print(encVol);
   //Serial.print(" DACerror: ");
