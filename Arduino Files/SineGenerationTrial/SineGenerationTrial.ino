@@ -15,12 +15,17 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 //define the encoder pins
 #define encA 19
 #define encB 20
+#define FreqSamplingSize 20
 
 /*----------------------- Sine Wave Parameters ------------------------*/
 float Period = 0.5;                    //Best starting at about 0.5 seconds
 float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
 int counter = 0;
+float FreqArr[FreqSamplingSize];
+int i = 0; //counter for for loop
+
+/*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
 float Kp = 1;
 
@@ -30,6 +35,15 @@ Encoder myEnc(encA, encB);
 void setup() {
   Serial.begin(115200);
   InterruptSetup(); 
+
+  //Set up the Frequency Array
+  while(!Serial){
+    ;//wait to open the serial port
+  }
+  for (i=0; i < FreqSamplingSize; i++) {
+    FreqArr[i] = 0.2 +(2.5-0.2)*i/FreqSamplingSize;
+    Serial.println(FreqArr[i]);
+  }
 }
 
 void loop() {
@@ -100,10 +114,10 @@ ISR(TIMER1_COMPA_vect){
   //Serial.print(counter);
   //Serial.print(" Sine Value: ");
   //Serial.print(Output);
-  Serial.print(" Enc Vol: ");
-  Serial.print(encVol);
-  Serial.print(" DACerror: ");
-  Serial.print(error);
-  Serial.print(" DAC Signal: ");
-  Serial.println(DACsignal);
+  //Serial.print(" Enc Vol: ");
+  //Serial.print(encVol);
+  //Serial.print(" DACerror: ");
+  //Serial.print(error);
+  //Serial.print(" DAC Signal: ");
+  //Serial.println(DACsignal);
 }
