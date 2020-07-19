@@ -17,7 +17,7 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 #define encB 20
 
 /*----------------------- Sine Wave Parameters ------------------------*/
-float Period = 0.2;                    //Best starting at about 0.5 seconds
+float Period = 0.5;                    //Best starting at about 0.5 seconds
 float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
 int counter = 0;
@@ -35,8 +35,8 @@ void setup() {
 void loop() {
   int t = millis();
   //Serial.println(t);
-  //if(t > 10000){
-  if(0){
+  if(t > 10000){
+  //if(0){ //uncomment this for the interupt to run continuously
     TIMSK1 = 0;
     AnalogOutput.setValue(4096/2);
     while(1){
@@ -100,7 +100,7 @@ ISR(TIMER1_COMPA_vect){
   //Serial.print(counter);
   //Serial.print(" Sine Value: ");
   //Serial.print(Output);
-  Serial.print(" Enc Val: ");
+  Serial.print(" Enc Vol: ");
   Serial.print(encVol);
   Serial.print(" DACerror: ");
   Serial.print(error);
