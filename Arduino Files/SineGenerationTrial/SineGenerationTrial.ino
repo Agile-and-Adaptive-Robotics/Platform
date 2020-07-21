@@ -18,14 +18,13 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 #define FreqSamplingSize 5
 
 /*----------------------- Sine Wave Parameters ------------------------*/
-//float Period = 5;
 float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
 int counter = 0;
+float FreqArr[FreqSamplingSize];
 int i = 0; //counter for for loop
 int j = 0; //counter for the Frequency Array to loop through all frequencies
 unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds to get to a new frequency
-float FreqArr[FreqSamplingSize];
 
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
@@ -45,12 +44,15 @@ void setup() {
 }
 
 void loop() {
-  unsigned long t = millis()/10000; //count the number of second ellapses since the program runs. Because of the type, it will always round up. If want a different counting period, change the 10000 number
+  //count the number of milisecond ellapses since the program runs. Because of the type, it will always round up. 
+  //If want a different counting period, change the 10000 number
+  unsigned long t = millis()/5000; 
   if(t>timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t; 
-    writeData2Serial(-1, -1); //printing a -1 in the data to know where the switch to the next frequency
-    //Serial.println(t); //for debugging
+    //writeData2Serial(-1, -1); //printing a -1 in the data to know where the switch to the next frequency
+    Serial.println(t); //for debugging
+    Serial.println(millis());
   }
   if(j > FreqSamplingSize){
     TIMSK1 = 0; //turn off the interrupt
@@ -123,7 +125,7 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
-  writeData2Serial(encVol, (int) DACsignal);
+  //writeData2Serial(encVol, (int) DACsignal);
   //Serial.print(" Enc Vol: ");
   //Serial.print(encVol);
   //Serial.print(" DACerror: ");
