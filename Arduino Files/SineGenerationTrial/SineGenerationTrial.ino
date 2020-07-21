@@ -22,10 +22,10 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
 int counter = 0;
-float FreqArr[FreqSamplingSize];
 int i = 0; //counter for for loop
 int j = 0; //counter for the Frequency Array to loop through all frequencies
 unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds to get to a new frequency
+float FreqArr[FreqSamplingSize];
 
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
@@ -49,7 +49,7 @@ void loop() {
   if(t>timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t; 
-    Serial.println(t); //for debugging
+    //Serial.println(t); //for debugging
   }
   if(j > FreqSamplingSize){
     TIMSK1 = 0;
@@ -116,5 +116,5 @@ ISR(TIMER1_COMPA_vect){
   //Serial.print(" DACerror: ");
   //Serial.print(error);
   //Serial.print(" DAC Signal: ");
-  //Serial.println(DACsignal);
+  Serial.println(DACsignal);
 }
