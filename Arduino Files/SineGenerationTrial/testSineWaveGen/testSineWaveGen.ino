@@ -1,6 +1,7 @@
 //This program is to test a sine generation algorithm and to understand it
 //Author: Jake Chung
 //This program is developed based on Dr.Hunt algorithm
+//Need to remember that this program is for the Arduino Due
 
 #define SAMP_SIZE 50 //define the sample size of the sine value array
 
