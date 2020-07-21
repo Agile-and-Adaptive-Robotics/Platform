@@ -41,7 +41,7 @@ void setup() {
     FreqArr[i] = 0.2 +(2.5-0.2)*i/FreqSamplingSize;
   }
   InterruptSetup();
-  delay(500); //this delay seems to work
+  delay(500); //this delay seems to work so the interrupt routine has time to execute
 }
 
 void loop() {
@@ -49,12 +49,16 @@ void loop() {
   if(t>timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t; 
+    writeData2Serial(-1, -1); //printing a -1 in the data to know where the switch to the next frequency
     //Serial.println(t); //for debugging
   }
   if(j > FreqSamplingSize){
-    TIMSK1 = 0;
+    TIMSK1 = 0; //turn off the interrupt
     AnalogOutput.setValue(4096/2);
     Serial.println("Program is done.");
+    while(1){
+      //does nothing
+    }
   }
 }
 
@@ -77,6 +81,13 @@ void InterruptSetup(){
   sei();//allow interrupts
 }
 
+//This function handle the printing to serial
+void writeData2Serial(float encoderVal, int DACVal ){
+  Serial.print(encoderVal);
+  Serial.print("\t");
+  Serial.println(DACVal);
+}
+
 ISR(TIMER1_COMPA_vect){
   float Period = 1/FreqArr[j];
   float Output = PtPAmplitude/2*sin((counter*InterruptRate)*2*PI/Period);
@@ -96,7 +107,8 @@ ISR(TIMER1_COMPA_vect){
   }
   
   //set up the negative feedback loop
-  float pos = myEnc.read();
+  //float pos = myEnc.read(); //comment this out to test at home
+  float pos = 0; //comment this out when the Arduino is connected to the platform.
   float encAngle = 10.0/226.0*pos; //convert to degrees
   float encVol = 2.5/10.0*encAngle; //convert read angle to voltage
 
@@ -111,10 +123,11 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
+  writeData2Serial(encVol, (int) DACsignal);
   //Serial.print(" Enc Vol: ");
   //Serial.print(encVol);
   //Serial.print(" DACerror: ");
   //Serial.print(error);
   //Serial.print(" DAC Signal: ");
-  Serial.println(DACsignal);
+  //Serial.println(DACsignal);
 }
