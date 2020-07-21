@@ -24,7 +24,8 @@ float InterruptRate = 0.02;
 int counter = 0;
 float FreqArr[FreqSamplingSize];
 int i = 0; //counter for for loop
-int j = 3; //counter for the Frequency Array to loop through all frequencies
+int j = 0; //counter for the Frequency Array to loop through all frequencies
+unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds to get to a new frequency
 
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
@@ -34,7 +35,7 @@ float Kp = 1;
 Encoder myEnc(encA, encB);
 
 void setup() {
-  //Serial.begin(115200);
+  Serial.begin(115200);
   //Set up the Frequency Array
   for (i=0; i < FreqSamplingSize; i++) {
     FreqArr[i] = 0.2 +(2.5-0.2)*i/FreqSamplingSize;
@@ -44,13 +45,16 @@ void setup() {
 }
 
 void loop() {
-  int t = millis();
-  if(t%10000==0){
-    j++;
+  unsigned long t = millis()/10000; //count the number of second ellapses since the program runs. Because of the type, it will always round up. If want a different counting period, change the 10000 number
+  if(t>timeCounter){
+    j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
+    timeCounter = t; 
+    Serial.println(t); //for debugging
   }
   if(j > FreqSamplingSize){
     TIMSK1 = 0;
     AnalogOutput.setValue(4096/2);
+    Serial.println("Program is done.");
   }
 }
 
