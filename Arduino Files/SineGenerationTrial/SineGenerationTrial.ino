@@ -29,6 +29,7 @@ unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds t
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
 float Kp = 1;
+float pos;
 
 //Encoder set up
 Encoder myEnc(encA, encB);
@@ -41,18 +42,21 @@ void setup() {
   }
   InterruptSetup();
   delay(500); //this delay seems to work so the interrupt routine has time to execute
+  while (!Serial) {
+    ; // wait for serial port to connect
+  }
 }
 
 void loop() {
   //count the number of milisecond ellapses since the program runs. Because of the type, it will always round up. 
   //If want a different counting period, change the 10000 number
-  unsigned long t = millis()/5000; 
+  unsigned long t = millis()/10000; 
   if(t>timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t; 
-    //writeData2Serial(-1, -1); //printing a -1 in the data to know where the switch to the next frequency
-    Serial.println(t); //for debugging
-    Serial.println(millis());
+    writeData2Serial(-1, -1); //printing a -1 in the data to know where the switch to the next frequency
+    //Serial.println(t); //for debugging
+    //Serial.println(millis());
   }
   if(j > FreqSamplingSize){
     TIMSK1 = 0; //turn off the interrupt
@@ -109,8 +113,15 @@ ISR(TIMER1_COMPA_vect){
   }
   
   //set up the negative feedback loop
-  //float pos = myEnc.read(); //comment this out to test at home
-  float pos = 0; //comment this out when the Arduino is connected to the platform.
+  /* for testing
+  if (j==1){
+    float pos = myEnc.read(); //comment this out to test at home
+  } else{
+    float pos = 0;
+  }
+  */
+  float pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
+  //float pos = 1.0; //comment this out when the Arduino is connected to the platform.
   float encAngle = 10.0/226.0*pos; //convert to degrees
   float encVol = 2.5/10.0*encAngle; //convert read angle to voltage
 
@@ -125,7 +136,7 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
-  //writeData2Serial(encVol, (int) DACsignal);
+  writeData2Serial(encVol, (int) DACsignal);
   //Serial.print(" Enc Vol: ");
   //Serial.print(encVol);
   //Serial.print(" DACerror: ");
