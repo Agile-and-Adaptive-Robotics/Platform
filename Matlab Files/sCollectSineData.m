@@ -5,7 +5,7 @@ function data = sCollectSineData(s)
 %open to collect. If program is terminated prematurely, do fclose
 fopen(s);
 %make the cell to collect the data
-length_to_collect = 500;%size of data array to collect
+length_to_collect = 2500;%size of data array to collect
 %cell to store the data
 collect = cell(length_to_collect, 1);
 %remove the first 20 lines of the serial port 
