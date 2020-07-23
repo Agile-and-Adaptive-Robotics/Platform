@@ -29,6 +29,7 @@ unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds t
 float FreqArr[FreqSamplingSize];
 float lowThres = 0.2;
 float highThres = 1.35;
+unsigned long t = 0; //variable to store the millis value
 
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
@@ -48,19 +49,12 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect
   }
+  t = millis()/10000;
 }
 
 void loop() {
   //count the number of milisecond ellapses since the program runs. Because of the type, it will always round up. 
   //If want a different counting period, change the 10000 number
-  unsigned long t = millis()/10000; 
-  if(t>timeCounter){
-    j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
-    timeCounter = t; 
-    //writeData2Serial((float) 99.0,(int) 99); //printing a -1 in the data to know where the switch to the next frequency
-    //Serial.println(t); //for debugging
-    //Serial.println(millis());
-  }
   if(j > FreqSamplingSize){
     TIMSK1 = 0; //turn off the interrupt
     AnalogOutput.setValue(4096/2);
@@ -138,7 +132,13 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
-  writeData2Serial(encVol, (int) DACsignal);
+  if (t>timeCounter){
+    j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
+    timeCounter = t;
+    writeData2Serial((float) -1,(int) -1); //printing a -1 in the data to know where the switch to the next frequency
+  } else {
+    writeData2Serial(encVol, (int) DACsignal);
+  }
   //Serial.print(" Enc Vol: ");
   //Serial.print(encVol);
   //Serial.print(" DACerror: ");
