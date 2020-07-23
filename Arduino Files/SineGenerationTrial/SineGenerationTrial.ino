@@ -57,7 +57,7 @@ void loop() {
   if(t>timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t; 
-    writeData2Serial((int) 99,(int) 99); //printing a -1 in the data to know where the switch to the next frequency
+    //writeData2Serial((float) 99.0,(int) 99); //printing a -1 in the data to know where the switch to the next frequency
     //Serial.println(t); //for debugging
     //Serial.println(millis());
   }
