@@ -20,7 +20,7 @@ fprintf('Reject complete, start collecting\n')
 for i = 1:length_to_collect
     collect{i} = fgetl(s);
 end
-disp('Collection is completed, begin converting.')
+disp('Collection is completed.')
 %close the port
 fclose(s);
 data = collect;
