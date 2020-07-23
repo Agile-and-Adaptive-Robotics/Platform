@@ -49,10 +49,10 @@ void setup() {
   while (!Serial) {
     ; // wait for serial port to connect
   }
-  t = millis()/10000;
 }
 
 void loop() {
+  t = millis()/10000;
   //count the number of milisecond ellapses since the program runs. Because of the type, it will always round up. 
   //If want a different counting period, change the 10000 number
   if(j > FreqSamplingSize){
