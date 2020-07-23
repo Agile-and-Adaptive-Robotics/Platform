@@ -15,21 +15,24 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 //define the encoder pins
 #define encA 19
 #define encB 20
-#define FreqSamplingSize 5
+#define FreqSamplingSize 10
 
 /*----------------------- Sine Wave Parameters ------------------------*/
 float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
 int counter = 0;
-float FreqArr[FreqSamplingSize];
 int i = 0; //counter for for loop
 int j = 0; //counter for the Frequency Array to loop through all frequencies
 unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds to get to a new frequency
 
+//Set up data collection
+float FreqArr[FreqSamplingSize];
+float lowThres = 0.2;
+float highThres = 1.35;
+
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
 float Kp = 1;
-float pos;
 
 //Encoder set up
 Encoder myEnc(encA, encB);
@@ -38,7 +41,7 @@ void setup() {
   Serial.begin(115200);
   //Set up the Frequency Array
   for (i=0; i < FreqSamplingSize; i++) {
-    FreqArr[i] = 0.2 +(2.5-0.2)*i/FreqSamplingSize;
+    FreqArr[i] = lowThres +(highThres-lowThres)*i/FreqSamplingSize;
   }
   InterruptSetup();
   delay(500); //this delay seems to work so the interrupt routine has time to execute
@@ -54,7 +57,7 @@ void loop() {
   if(t>timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t; 
-    writeData2Serial(-1, -1); //printing a -1 in the data to know where the switch to the next frequency
+    writeData2Serial((int) 99,(int) 99); //printing a -1 in the data to know where the switch to the next frequency
     //Serial.println(t); //for debugging
     //Serial.println(millis());
   }
@@ -121,7 +124,6 @@ ISR(TIMER1_COMPA_vect){
   }
   */
   float pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
-  //float pos = 1.0; //comment this out when the Arduino is connected to the platform.
   float encAngle = 10.0/226.0*pos; //convert to degrees
   float encVol = 2.5/10.0*encAngle; //convert read angle to voltage
 
