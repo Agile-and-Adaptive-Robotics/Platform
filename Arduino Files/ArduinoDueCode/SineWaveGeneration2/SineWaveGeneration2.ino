@@ -2,7 +2,7 @@
 //July 24, 2020
 //This program generate a sinusoidal pattern and send it to the DAC of the Due
 int counter = 0;//counter for keeping track of the counter period
-int counterPeriod = 50; //20ms sampling rate of the sine wave
+int counterPeriod = 2; //20ms sampling rate of the sine wave
 int i = 0; //general counter for loop
 unsigned long t = 0; //variable for the millis function
 
@@ -24,6 +24,4 @@ void loop() {
     analogWrite(DAC0, (int) out);
     //Serial.println(out);
   }
-
-
 }
