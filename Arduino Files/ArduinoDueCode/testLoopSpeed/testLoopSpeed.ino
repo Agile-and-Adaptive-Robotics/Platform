@@ -9,9 +9,12 @@ float Amplitude = 2;
 float freq = 0.5;
 //float out;
 
+
 void setup() {
   Serial.begin(9600);
 }
+
+
 void loop() {
   t = millis();
   if (t > 2000){
