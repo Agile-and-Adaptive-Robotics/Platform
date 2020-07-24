@@ -20,16 +20,16 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 /*----------------------- Sine Wave Parameters ------------------------*/
 float PtPAmplitude = 2;  
 float InterruptRate = 0.02;
-int counter = 0;
+volatile int counter = 0;
 int i = 0; //counter for for loop
-int j = 0; //counter for the Frequency Array to loop through all frequencies
-unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds to get to a new frequency
+volatile int j = 0; //counter for the Frequency Array to loop through all frequencies
+volatile unsigned long timeCounter = 0; //this is a time counter to count to 10 seconds to get to a new frequency
 
 //Set up data collection
 float FreqArr[FreqSamplingSize];
 float lowThres = 0.2;
 float highThres = 1.35;
-unsigned long t = 0; //variable to store the millis value
+volatile unsigned long t = 0; //variable to store the millis value
 
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
