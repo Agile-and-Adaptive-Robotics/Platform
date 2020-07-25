@@ -85,9 +85,9 @@ void InterruptSetup(){
 }
 
 //This function handle the printing to serial
-void writeData2Serial(float encoderVal, int DACVal ){
+void writeData2Serial(int encoderVal, int DACVal ){
   Serial.print(encoderVal);
-  Serial.print("\t");
+  Serial.print(" ");
   Serial.println(DACVal);
 }
 
@@ -110,14 +110,7 @@ ISR(TIMER1_COMPA_vect){
   }
   
   //set up the negative feedback loop
-  /* for testing
-  if (j==1){
-    float pos = myEnc.read(); //comment this out to test at home
-  } else{
-    float pos = 0;
-  }
-  */
-  float pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
+  int pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
   float encAngle = 10.0/226.0*pos; //convert to degrees
   float encVol = 2.5/10.0*encAngle; //convert read angle to voltage
 
@@ -135,10 +128,11 @@ ISR(TIMER1_COMPA_vect){
   if (t>timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t;
-    writeData2Serial((float) -1,(int) -1); //printing a -1 in the data to know where the switch to the next frequency
+    writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
   } else {
-    writeData2Serial(encVol, (int) DACsignal);
+    writeData2Serial(pos, (int) DACsignal);
   }
+  //Serial.println(pos);
   //Serial.print(" Enc Vol: ");
   //Serial.print(encVol);
   //Serial.print(" DACerror: ");
