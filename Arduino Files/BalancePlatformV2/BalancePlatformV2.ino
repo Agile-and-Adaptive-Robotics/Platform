@@ -28,7 +28,7 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 /*----------------------- Pin Declarations --------------------------------*/
 int InputPin = A0;                      //Pin that takes in values from a function generator or potentiometer
     
-uint8_t VoltageMode = 0;                //Variable that keeps track of voltage mode, 0 for hold, 1 for manual control, 2 for PRTS
+volatile uint8_t VoltageMode = 0;		//Variable that keeps track of voltage mode, 0 for hold, 1 for manual control, 2 for PRTS
 
 uint8_t HoldPin = 2;                    //Pin connected to a button that switches voltage from 2.5V to variable   
 uint8_t HoldLED = 7;                    //Pin connected to an LED that is dim when voltage supplied to the Hbridge is 2.5V and lit when the voltage is variable
