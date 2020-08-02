@@ -1,32 +1,45 @@
 #include <SPI.h>
 #include <AH_MCP4921.h>
+#include <Encoder.h>      //For encoder 
 
+//define the encoder pins
+#define encA 19
+#define encB 20
+
+//Encoder set up
+Encoder myEnc(encA, encB);
+
+//DAC set up
 AH_MCP4921 AnalogOutput(51, 52, 53);
 
-int OutputSignal = 0;
-  float offset = 2.5;
-  float amp = 1.0;
-  //float freq = 1.0*PI/180.0;
-  float freq = 1.0*2.0*PI;
-  int startTime = millis();
-  int Period = 1000;
-
-int InputSignalPin = A0;
-int InputValue;
-
+//declare variables
+float desirePos = 2048; //position set by the serial port
+int pos = 0; //position read by the encoder
+String readStr;
+float readVoltage;
+float err;
+float DACinput;
 
 
 void setup() {
-  pinMode(InputSignalPin, INPUT);
-
+  Serial.begin(115200);
+  delay(200); //need this delay to set the value of the DAC
+  AnalogOutput.setValue(pos); //initiate at the 0 position.
 }
 
 void loop() {
-  InputValue = analogRead(InputSignalPin);
-  OutputSignal = InputValue*(4095/1023);
-  AnalogOutput.setValue(OutputSignal);
-  delay(1);
-
+  if(Serial.available()){ //wait for serial to read
+    readStr = Serial.readString(); //use readString to read the entire number
+    desirePos = readStr.toInt(); //convert string to integer
+    desirePos = 2.5/2048*desirePos;
+  }
+  //apply negative feedback 
+  pos = myEnc.read();
+  readVoltage = 0.25*(pos*0.17578)+2.5; //convert encoder pulses to voltage
+  err = desirePos - readVoltage; //calculate error
+  float DACVoltage = err + 2.5; //offset the error
+  DACinput = 2048/2.5*DACVoltage; 
+  AnalogOutput.setValue((int) DACinput);
   
   /*
   for(int i = 1000; i <= 3095; i=i+10){
