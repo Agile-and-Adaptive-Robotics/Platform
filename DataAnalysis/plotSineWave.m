@@ -21,4 +21,6 @@ figure(1)
 plot(index, data1(:,2))
 hold on
 plot(index, data2(:,2))
+ylabel('Position in Binary')
+xlabel('Time (s)')
 
