@@ -10,7 +10,8 @@ Goals: To create a balance platform that can vibrate at pseudorandom pattern to 
 Dr. Hunt wants the platform to be able to generate a motion following the pseudo random ternary sequence to test the bipedal robot. When the robot is tested on this platform, the transfer function of the bipedal robot can be derived. 
 
 ## Deadline:
-At least the end of Spring Term 2020
+At least the end of Spring Term 2020 
+Due to the pandemic, this deadline has been missed. Currently, there is no deadline.
 
 ## Creators:
 
