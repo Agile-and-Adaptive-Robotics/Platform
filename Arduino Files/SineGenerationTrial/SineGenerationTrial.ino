@@ -130,7 +130,7 @@ ISR(TIMER1_COMPA_vect){
     timeCounter = t;
     writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
   } else {
-    writeData2Serial(pos, (int) DACsignal);
+    writeData2Serial(pos, (int) Output);
   }
   //Serial.println(pos);
   //Serial.print(" Enc Vol: ");
