@@ -40,12 +40,12 @@ Encoder myEnc(encA, encB);
 
 void setup() {
   Serial.begin(115200);
-  //Set up the Frequency Array
+  //Set up the Frequency Array that contains the frequency the interrupt will output
   for (i=0; i < FreqSamplingSize; i++) {
     FreqArr[i] = lowThres +(highThres-lowThres)*i/FreqSamplingSize;
   }
   InterruptSetup();
-  delay(500); //this delay seems to work so the interrupt routine has time to execute
+  delay(500); //delay for everything to catch up
   while (!Serial) {
     ; // wait for serial port to connect
   }
@@ -58,7 +58,6 @@ void loop() {
   if(j > FreqSamplingSize){
     TIMSK1 = 0; //turn off the interrupt
     AnalogOutput.setValue(4096/2);
-    Serial.println("Program is done.");
     while(1){
       //does nothing
     }
@@ -125,12 +124,13 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
-  if (t>timeCounter){
+  Serial.println(DACsignal);
+  if (t > timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t;
-    writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
+    //writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
   } else {
-    writeData2Serial(pos, (int) Output);
+    //writeData2Serial(pos, (int) Output);
   }
   //Serial.println(pos);
   //Serial.print(" Enc Vol: ");
