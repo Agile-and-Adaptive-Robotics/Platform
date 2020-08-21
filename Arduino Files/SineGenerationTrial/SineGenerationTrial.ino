@@ -111,8 +111,8 @@ ISR(TIMER1_COMPA_vect){
   
   //set up the negative feedback loop
   int pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
-  float encAngle = 10.0/226.0*pos; //convert to degrees
-  float encVol = 2.5/10.0*encAngle; //convert read angle to voltage
+  float encAngle = 360/2048*pos; //convert to degrees 2048 pulses per revolution
+  float encVol = 2.5/20.0*encAngle; //convert read angle to voltage
 
   float error = -Output + encVol;
   float DACerror = error*4096.0/5;
@@ -130,7 +130,7 @@ ISR(TIMER1_COMPA_vect){
     timeCounter = t;
     writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
   } else {
-    writeData2Serial(pos, (int) DACsignal);
+    writeData2Serial(pos, (int) Output);
   }
   //Serial.println(pos);
   //Serial.print(" Enc Vol: ");
