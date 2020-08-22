@@ -42,7 +42,7 @@ void setup() {
   Serial.begin(115200);
   //Set up the Frequency Array that contains the frequency the interrupt will output
   for (i=0; i < FreqSamplingSize; i++) {
-    FreqArr[i] = lowThres +(highThres-lowThres)*i/FreqSamplingSize;
+    FreqArr[i] = highThres -(highThres-lowThres)*i/FreqSamplingSize; //goes from high frequency to low frequency
   }
   InterruptSetup();
   delay(500); //delay for everything to catch up
