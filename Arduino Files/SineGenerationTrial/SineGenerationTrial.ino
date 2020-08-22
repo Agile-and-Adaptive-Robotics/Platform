@@ -111,11 +111,10 @@ ISR(TIMER1_COMPA_vect){
   //set up the negative feedback loop
   int pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
   float encAngle = 360/2048*pos; //convert to degrees 2048 pulses per revolution
-  float encVol = 2.5/20.0*encAngle; //convert read angle to voltage
+  float encBit = 4096/20*encAngle + 4096/10; //convert read angle degree to binary of DACoutput to compute error correctly
 
-  float error = -Output + encVol;
-  float DACerror = error*4096.0/5;
-  float DACsignal = Kp*DACerror + DACoffset;
+  float error = DACOutput - encBit; //Compute error. This error is in binary
+  float DACsignal = Kp*error;//Need DACoffset because the signal goes from 
 
   if(DACsignal > 4095.0){
     DACsignal = 4095.0;
