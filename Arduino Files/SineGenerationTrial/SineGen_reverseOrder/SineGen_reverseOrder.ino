@@ -15,7 +15,7 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 //define the encoder pins
 #define encA 19
 #define encB 20
-#define FreqSamplingSize 10
+#define FreqSamplingSize 10 //goes through 10 frequencies
 
 /*----------------------- Sine Wave Parameters ------------------------*/
 float PtPAmplitude = 2;  
