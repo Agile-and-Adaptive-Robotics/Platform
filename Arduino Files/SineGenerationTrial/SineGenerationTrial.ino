@@ -34,6 +34,7 @@ volatile unsigned long t = 0; //variable to store the millis value
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
 float Kp = 1;
+int pos = 0; //initialize the variable for encoder read
 
 //Encoder set up
 Encoder myEnc(encA, encB);
@@ -84,7 +85,7 @@ void InterruptSetup(){
 }
 
 //This function handle the printing to serial
-void writeData2Serial(int encoderVal, int DACVal ){
+void writeData2Serial(int encoderVal, float DACVal ){
   Serial.print(encoderVal);
   Serial.print(" ");
   Serial.println(DACVal);
@@ -109,10 +110,10 @@ ISR(TIMER1_COMPA_vect){
   }
   
   //set up the negative feedback loop
-  int pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
-  float encAngle = 360/2048*pos; //convert to degrees 2048 pulses per revolution
-  float encBit = 4096/20*encAngle; //convert read angle degree to binary of DACoutput to compute error correctly
-  float error = (DACOutput - 2048) - encBit; //Compute error. This error is in binary (DACOutput - 2048) is to shfit the sine wave to 0
+  pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
+  float encAngle = 360.0/8192.0 * pos; //convert to degrees 2048 pulses per revolution
+  float encBit = 4096.0/10.0*encAngle; //convert read angle degree to binary of DACoutput to compute error correctly
+  float error = (DACOutput - 2048.0) - encBit; //Compute error. This error is in binary (DACOutput - 2048) is to shfit the sine wave to 0
   float DACsignal = Kp*error + DACoffset;//Need DACoffset because the signal goes from 0 to 4096
 
   if(DACsignal > 4095.0){
@@ -122,13 +123,13 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
-  Serial.println(DACsignal);
+  //Serial.println(DACsignal); //uncomment when the code need to be debugged
   if (t > timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t;
-    //writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
+    writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
   } else {
-    //writeData2Serial(pos, (int) Output);
+    writeData2Serial(pos, (float) DACOutput);
   }
   //Serial.println(pos);
   //Serial.print(" Enc Vol: ");
