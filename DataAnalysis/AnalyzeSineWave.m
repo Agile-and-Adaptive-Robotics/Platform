@@ -63,7 +63,7 @@ end
 %the frequency of a signal should be determined in the Arduino code, but
 %this function can be used to validate the frequency collected from the
 %output data.
-%original code:
+%original code for pwelch:
 %https://www.mathworks.com/matlabcentral/answers/160059-finding-the-frequency-value-of-a-signal
 function [mainFreq] = calcFreq(data)
 %properties of the data input
