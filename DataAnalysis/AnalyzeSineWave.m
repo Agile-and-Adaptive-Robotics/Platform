@@ -53,7 +53,7 @@ for i = 1:length(encoderData(:,1))
     if (i == 9) || (i == 10) %add axis in the bottom plots
         xlabel('Time (s)')
     end
-    tempTitle = num2str(calcFreq(encoderData(i,10:490)));
+    tempTitle = num2str(calcFreq(encoderData(i,10:490))); %the pwelch function can't deal with NaN values, so only putting the range of values without NaN
     title(['Frequency ', tempTitle])
 end
 
@@ -70,7 +70,7 @@ function [mainFreq] = calcFreq(data)
 Tsamp = 0.02;
 Fsamp = 1/Tsamp;
 %choose fft size and calculate the spectrum
-Nfft = 300;
+Nfft = 450; %play with this number, it seems that as this number increases, the output frequency is more accurate. This number cannot exceed the sampling size though
 [Pxx, f] = pwelch(data, gausswin(Nfft), Nfft/2, Nfft, Fsamp);
 [~,maxIndex] = max(Pxx);
 mainFreq = f(maxIndex);
