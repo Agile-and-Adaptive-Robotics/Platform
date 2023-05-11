@@ -15,7 +15,7 @@ AH_MCP4921 AnalogOutput(51, 52, 53);          //SPI communication is on Arduino 
 //define the encoder pins
 #define encA 19
 #define encB 20
-#define FreqSamplingSize 10
+#define FreqSamplingSize 10 //goes through 10 frequencies
 
 /*----------------------- Sine Wave Parameters ------------------------*/
 float PtPAmplitude = 2;  
@@ -34,7 +34,6 @@ volatile unsigned long t = 0; //variable to store the millis value
 /*----------------------- Control Parameters ------------------------*/
 float DACoffset = 4096.0/2.0;
 float Kp = 1;
-int pos = 0; //initialize the variable for encoder read
 
 //Encoder set up
 Encoder myEnc(encA, encB);
@@ -43,7 +42,7 @@ void setup() {
   Serial.begin(115200);
   //Set up the Frequency Array that contains the frequency the interrupt will output
   for (i=0; i < FreqSamplingSize; i++) {
-    FreqArr[i] = lowThres +(highThres-lowThres)*i/FreqSamplingSize;
+    FreqArr[i] = highThres -(highThres-lowThres)*i/FreqSamplingSize; //goes from high frequency to low frequency
   }
   InterruptSetup();
   delay(500); //delay for everything to catch up
@@ -85,7 +84,7 @@ void InterruptSetup(){
 }
 
 //This function handle the printing to serial
-void writeData2Serial(int encoderVal, float DACVal ){
+void writeData2Serial(int encoderVal, int DACVal ){
   Serial.print(encoderVal);
   Serial.print(" ");
   Serial.println(DACVal);
@@ -110,11 +109,12 @@ ISR(TIMER1_COMPA_vect){
   }
   
   //set up the negative feedback loop
-  pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
-  float encAngle = 360.0/8192.0 * pos; //convert to degrees 2048 pulses per revolution
-  float encBit = 4096.0/10.0*encAngle; //convert read angle degree to binary of DACoutput to compute error correctly
-  float error = (DACOutput - 2048.0) - encBit; //Compute error. This error is in binary (DACOutput - 2048) is to shfit the sine wave to 0
-  float DACsignal = Kp*error + DACoffset;//Need DACoffset because the signal goes from 0 to 4096
+  int pos = myEnc.read(); //for some reason, you need this line, otherwise the interrupt would break
+  float encAngle = 360/2048*pos; //convert to degrees 2048 pulses per revolution
+  float encBit = 4096/20*encAngle + 4096/10; //convert read angle degree to binary of DACoutput to compute error correctly
+
+  float error = DACOutput - encBit; //Compute error. This error is in binary
+  float DACsignal = Kp*error;//Need DACoffset because the signal goes from 
 
   if(DACsignal > 4095.0){
     DACsignal = 4095.0;
@@ -123,13 +123,13 @@ ISR(TIMER1_COMPA_vect){
     DACsignal = 0.0;
   }
   AnalogOutput.setValue((int) DACsignal);
-  //Serial.println(DACsignal); //uncomment when the code need to be debugged
+  Serial.println(DACsignal);
   if (t > timeCounter){
     j++; //increment j to the next index when the time is greater than the counter. Effectively toggle after 10 seconds.
     timeCounter = t;
-    writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
+    //writeData2Serial((float) -99,(int) -99); //printing a -1 in the data to know where the switch to the next frequency
   } else {
-    writeData2Serial(pos, (float) DACOutput);
+    //writeData2Serial(pos, (int) Output);
   }
   //Serial.println(pos);
   //Serial.print(" Enc Vol: ");
